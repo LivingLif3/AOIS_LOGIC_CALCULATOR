@@ -1,3 +1,34 @@
+
+const bin_to_int = (number) => {
+    let res = 0
+    for(let i = 1; i < number.length; i++) {
+        if(number[i] == 1) {
+            res += 2**(number.length - 1 - i)
+        }
+    }
+    if(number[0] === 1) {
+        res *= -1
+    }
+    return res
+}
+
+const bin_to_num = (number) => {
+    let ans = 0
+    let intPart = []
+    let i = 0
+    while(number[i] !== '.') {
+        intPart.push(number[i])
+        i++
+    }
+    ans = bin_to_int(intPart)
+    let degree = -1
+    for (let j = number.indexOf('.') + 1; j < number.length; j++) {
+        ans += (number[j]) * 2**degree;
+        degree--;
+    }
+    return ans;
+}
+
 const decodeFormula = (formula) => {
     let arr = formula.split('')
     for (let i = 0; i < arr.length; i++) {
@@ -237,11 +268,38 @@ const buildSDNF = (table, answers, variables) => {
     console.log(answer)
 }
 
+const buildNumForm = (table, answers) => {
+    console.log('SKNF - ')
+    let ans1 = []
+    let ans2 = []
+    for(let i = 0; i < answers.length; i++) {
+        if(!answers[i]) {
+            ans1.push(i)
+        } else {
+            ans2.push(i)
+        }
+    }
+    console.log(ans1.join(', '))
+    console.log('------------------------------------------')
+    console.log('SDNF - ')
+    console.log(ans2.join(', '))
+}
+
+const buildInt = (answers) => {
+    let answersCopy = answers.slice(0)
+    answersCopy.unshift(0)
+    answersCopy.push('.')
+    let ans = bin_to_num(answersCopy)
+    console.log(`Index form - ${ans}`)
+    return ans
+}
+
+
 const main = () => {
     let stackVariables = []
     let stackSigns = []
     let variables = []
-    let formula = decodeFormula('((x1+(x2*(!x3)))->((x1~x2)*x4))') //'((1*1)*(1->(!1)))'
+    let formula = decodeFormula('((x1+(x2*(!x3)))->((x1~(!x2))))') //'((1*1)*(1->(!1)))'
     stackVariables = buildStacks(stackVariables, stackSigns, formula)
     variables = stackVariables.slice(0)
     let table = buildTable(stackVariables.length)
@@ -251,6 +309,10 @@ const main = () => {
     buildSDNF(table, answers, variables)
     console.log('----------------------------------------------')
     buildSKNF(table, answers, variables)
+    console.log('----------------------------------------------')
+    buildNumForm(table, answers)
+    console.log('----------------------------------------------')
+    buildInt(answers)
 }
 
 main()
