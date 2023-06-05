@@ -37,43 +37,58 @@ const decodeFormula = (formula) => {
             arr.splice(i + 1, 1)
         }
         let j = i + 1
-        let tmp = ''
+        let term = ''
         while (!!Number(arr[j])) {
-            tmp += arr[j]
+            term += arr[j]
             j++
         }
 
         if (arr[i] !== '(' && arr[i] !== '!' && arr[i] !== '*' && arr[i] !== '+') {
-            arr[i] += tmp
-            arr.splice(i + 1, tmp.length)
+            arr[i] += term
+            arr.splice(i + 1, term.length)
         }
     }
     return arr
 }
 
 let getPriority = (operator) => {
-    if (operator === '!') {
-        return 6
-    } else if (operator === '*') {
-        return 5
-    } else if (operator === '+') {
-        return 4
-    } else if(operator === '~') {
-        return 2
-    } else if (operator === '->') {
-        return 3
-    } else {
-        return 1
+    switch (operator) {
+        case '!':
+            return 6
+        case '*':
+            return 5
+        case '+':
+            return 4
+        case '~':
+            return 2
+        case '->':
+            return 3
+        default:
+            return 1
     }
+    // if (operator === '!') {
+    //     return 6
+    // } else if (operator === '*') {
+    //     return 5
+    // } else if (operator === '+') {
+    //     return 4
+    // } else if(operator === '~') {
+    //     return 2
+    // } else if (operator === '->') {
+    //     return 3
+    // } else {
+    //     return 1
+    // }
 }
 
 const checkOnSign = (element) => {
     let signs = ['!', '*', '+', '->', '(', ')', '~']
-    if (signs.indexOf(element) !== -1) {
-        return true
-    } else {
-        return false
-    }
+    return signs.indexOf(element) !== -1
+    // if (signs.indexOf(element) !== -1) {
+    //     return true
+    // } else {
+    //     return false
+    // }
 }
 
 const Conjuction = (a, b) => {
@@ -107,16 +122,25 @@ const Equivalence = (a, b) => {
 const BinaryOperWithoutInversion = (variables, sign) => {
     let a = variables.pop()
     let b = variables.pop()
-
-    if (sign === '*') {
-        return Conjuction(a, b)
-    } else if (sign === '+') {
-        return Disjuction(a, b)
-    } else if (sign === '->') {
-        return Implication(b, a)
-    } else {
-        return Equivalence(a, b)
+    switch (sign){
+        case '*':
+            return Conjuction(a, b)
+        case '+':
+            return Disjuction(a, b)
+        case '->':
+            return Implication(b, a)
+        default:
+            return Equivalence(a, b)
     }
+    // if (sign === '*') {
+    //     return Conjuction(a, b)
+    // } else if (sign === '+') {
+    //     return Disjuction(a, b)
+    // } else if (sign === '->') {
+    //     return Implication(b, a)
+    // } else {
+    //     return Equivalence(a, b)
+    // }
 }
 
 const BinaryOperWithInversion = (variables, sign) => {
@@ -269,7 +293,7 @@ const buildSDNF = (table, answers, variables) => {
 }
 
 const buildNumForm = (table, answers) => {
-    console.log('SKNF - ')
+    console.log('SKNF:')
     let ans1 = []
     let ans2 = []
     for(let i = 0; i < answers.length; i++) {
@@ -281,7 +305,7 @@ const buildNumForm = (table, answers) => {
     }
     console.log(ans1.join(', '))
     console.log('------------------------------------------')
-    console.log('SDNF - ')
+    console.log('SDNF:')
     console.log(ans2.join(', '))
 }
 
@@ -299,7 +323,7 @@ const main = () => {
     let stackVariables = []
     let stackSigns = []
     let variables = []
-    let formula = decodeFormula('((x1+(x2*(!x3)))->((x1~(!x2))))') //'((1*1)*(1->(!1)))'
+    let formula = decodeFormula('((x1+(x2*x3))->(!x1~(!x2)))') //'((1*1)*(1->(!1)))'
     stackVariables = buildStacks(stackVariables, stackSigns, formula)
     variables = stackVariables.slice(0)
     let table = buildTable(stackVariables.length)
